@@ -15,7 +15,8 @@ import { CreateGroupModal } from "./_components/create-group-modal";
 export default function ContactsPage() {
   const [isCreateGroupModalOpen, setIsCreateGroupModalOpen] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const searchParams =
+  typeof window !== "undefined" ? useSearchParams() : null;
 
   const { data: currentUser } = useConvexQuery(api.users.getCurrentUser);
 
@@ -25,7 +26,7 @@ export default function ContactsPage() {
   );
 
   useEffect(() => {
-    if (searchParams.get("createGroup") === "true") {
+if (searchParams?.get("createGroup") === "true"){
       setIsCreateGroupModalOpen(true);
       router.replace("/contacts");
     }
