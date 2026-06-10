@@ -59,12 +59,14 @@ export const getAllUsers = query({
   args: {},
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) throw new Error("Not authenticated");
+
+    if (!identity) {
+      return [];
+    }
 
     return await ctx.db.query("users").collect();
   },
 });
-
 /* ---------------- SEARCH USERS ---------------- */
 
 
