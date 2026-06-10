@@ -72,9 +72,11 @@ export function CreateGroupModal({
   /* ---------------- Convex ---------------- */
 
   const { data: currentUserDoc } = useConvexQuery(
-    api.users.getUserByClerkId,
-    user ? { clerkId: user.id } : "skip"
-  );
+  api.users.getCurrentUser,
+  {}
+);
+
+
 
   const createGroup = useConvexMutation(
     api.contacts.createGroup
@@ -88,6 +90,8 @@ export function CreateGroupModal({
 
   const trimmedQuery = searchQuery.trim();
 
+
+
   const {
     data: searchResults,
     isLoading: isSearching,
@@ -99,6 +103,25 @@ export function CreateGroupModal({
         }
       : "skip"
   );
+console.log(
+  "SEARCH RESULTS:",
+  JSON.stringify(searchResults, null, 2)
+);
+
+ {searchResults?.map((user) => (
+  <CommandItem
+    key={String(user._id)}
+    value={`${user.name}-${user.email}`}
+    onSelect={() => addMember(user)}
+  >
+    <div>
+      <p className="text-sm">{user.name}</p>
+      <p className="text-xs text-muted-foreground">
+        {user.email}
+      </p>
+    </div>
+  </CommandItem>
+))}
 
   /* ---------------- Form ---------------- */
 
@@ -116,6 +139,8 @@ export function CreateGroupModal({
   });
 
   if (!isLoaded || !currentUserDoc) return null;
+
+
 
   /* ---------------- Helpers ---------------- */
 
@@ -224,16 +249,15 @@ export function CreateGroupModal({
             <div className="flex flex-wrap gap-2">
               {/* Current user */}
 
-              <Badge variant="secondary">
-                <Avatar className="h-5 w-5 mr-2">
-                  <AvatarFallback>
-                    {currentUserDoc.name?.charAt(0) ||
-                      "?"}
-                  </AvatarFallback>
-                </Avatar>
+<Badge variant="secondary">
+  <Avatar className="h-5 w-5 mr-2">
+    <AvatarFallback>
+      {currentUserDoc.name?.charAt(0) || "?"}
+    </AvatarFallback>
+  </Avatar>
 
-                {currentUserDoc.name} (You)
-              </Badge>
+  You
+</Badge>
 
               {/* Selected members */}
 
@@ -280,12 +304,15 @@ export function CreateGroupModal({
                 </PopoverTrigger>
 
                 <PopoverContent className="p-0 w-72">
-                  <Command>
-                    <CommandInput
-                      value={searchQuery}
-                      onValueChange={setSearchQuery}
-                      placeholder="Search by name or email..."
-                    />
+                 <Command shouldFilter={false}>
+                 <CommandInput
+  placeholder="Search by name or email..."
+  value={searchQuery}
+  onValueChange={(value) => {
+    console.log("TYPING:", value);
+    setSearchQuery(value);
+  }}
+/>
 
                     <CommandList>
                       <CommandEmpty>
@@ -296,36 +323,32 @@ export function CreateGroupModal({
                           : "No users found"}
                       </CommandEmpty>
 
-                      <CommandGroup heading="Users">
-                        {searchResults
-                          ?.filter(
-                            (u) =>
-                              !selectedMembers.some(
-                                (m) =>
-                                  m._id === u._id
-                              ) &&
-                              u._id !==
-                                currentUserDoc._id
-                          )
-                          .map((user) => (
-                            <CommandItem
-                              key={user._id}
-                              onSelect={() =>
-                                addMember(user)
-                              }
-                            >
-                              <div>
-                                <p className="text-sm">
-                                  {user.name}
-                                </p>
+<CommandGroup heading="Users">
+  {searchResults
+    ?.filter(
+      (u) =>
+        !selectedMembers.some(
+          (m) => m._id === u._id
+        )
+    )
+    .map((user) => (
+      <CommandItem
+        key={String(user._id)}
+        value={`${user.name} ${user.email}`}
+        onSelect={() => addMember(user)}
+      >
+        <div>
+          <p className="text-sm">
+            {user.name}
+          </p>
 
-                                <p className="text-xs text-muted-foreground">
-                                  {user.email}
-                                </p>
-                              </div>
-                            </CommandItem>
-                          ))}
-                      </CommandGroup>
+          <p className="text-xs text-muted-foreground">
+            {user.email}
+          </p>
+        </div>
+      </CommandItem>
+    ))}
+</CommandGroup>
                     </CommandList>
                   </Command>
                 </PopoverContent>

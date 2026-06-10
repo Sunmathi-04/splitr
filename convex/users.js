@@ -68,7 +68,6 @@ export const getAllUsers = query({
   },
 });
 /* ---------------- SEARCH USERS ---------------- */
-
 export const searchUsers = query({
   args: {
     query: v.string(),
@@ -79,27 +78,21 @@ export const searchUsers = query({
 
     const users = await ctx.db.query("users").collect();
 
-    console.log("SEARCH:", search);
-    console.log("USERS:", users);
+    
 
-    return users.filter((user) => {
+ console.log("ALL USERS FULL:", users);
+    const filtered = users.filter((user) => {
       return (
         user.name?.toLowerCase().includes(search) ||
         user.email?.toLowerCase().includes(search)
       );
     });
-  },
-});
 
-/* ---------------- GET USER BY CLERK ID ---------------- */
-export const getUserByClerkId = query({
-  args: {
-    clerkId: v.string(),
-  },
-  handler: async (ctx, { clerkId }) => {
-    return await ctx.db
-      .query("users")
-      .withIndex("by_userId", (q) => q.eq("userId", clerkId))
-      .unique();
+    console.log(
+      "FILTERED:",
+      filtered.map((u) => u.name)
+    );
+
+    return filtered;
   },
 });
