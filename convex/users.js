@@ -69,7 +69,6 @@ export const getAllUsers = query({
 });
 /* ---------------- SEARCH USERS ---------------- */
 
-
 export const searchUsers = query({
   args: {
     query: v.string(),
@@ -80,6 +79,9 @@ export const searchUsers = query({
 
     const users = await ctx.db.query("users").collect();
 
+    console.log("SEARCH:", search);
+    console.log("USERS:", users);
+
     return users.filter((user) => {
       return (
         user.name?.toLowerCase().includes(search) ||
@@ -88,7 +90,6 @@ export const searchUsers = query({
     });
   },
 });
-
 
 /* ---------------- GET USER BY CLERK ID ---------------- */
 export const getUserByClerkId = query({

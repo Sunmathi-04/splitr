@@ -82,6 +82,10 @@ export function CreateGroupModal({
 
   /* ---------------- SEARCH FIX ---------------- */
 
+ 
+
+
+
   const trimmedQuery = searchQuery.trim();
 
   const {

@@ -75,10 +75,24 @@ export const getExpensesBetweenUsers = query({
   handler: async (ctx, args) => {
     const currentUser = await ctx.runQuery("users:getCurrentUser");
     if (!currentUser) return null;
-    if (args.userId !== currentUser._id) return null;
+if (String(args.userId) !== String(currentUser._id)) {
+  return {
+    otherUser: null,
+    expenses: [],
+    settlements: [],
+    balance: 0,
+  };
+};
 
     const otherUser = await ctx.db.get(args.otherUserId);
-    if (!otherUser) return null;
+   if (!otherUser) {
+  return {
+    otherUser: null,
+    expenses: [],
+    settlements: [],
+    balance: 0,
+  };
+}
 
     const expenses = await ctx.db
       .query("expenses")

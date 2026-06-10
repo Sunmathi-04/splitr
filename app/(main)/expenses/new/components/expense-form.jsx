@@ -210,7 +210,11 @@ export function ExpenseForm({ type = "individual", onSuccess }) {
       setSelectedPersonId(null);
       setSelectedGroup(null);
 
-      onSuccess?.();
+    if (type === "individual") {
+  onSuccess?.(selectedPersonId);
+} else {
+  onSuccess?.(selectedGroup?._id);
+}
     } catch {
       toast.error("Failed to create expense");
     }
